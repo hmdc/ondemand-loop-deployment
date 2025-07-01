@@ -20,7 +20,7 @@ jobs:
           ENVIRONMENT=$(echo "$ENVIRONMENT" | tr '[:upper:]' '[:lower:]')
           ISSUE_NUMBER="${{ github.event.client_payload.github.payload.issue.number }}"
           TITLE=$(gh issue view "$ISSUE_NUMBER" --repo "${{ github.repository }}" --json title --jq '.title')
-          TAG=$(echo "$TITLE" | awk '{print $NF}')
+          TAG=$(echo "$TITLE" | grep -oE 'version: *[^ ]+' | sed 's/version: *//')
           
           if [[ ! "$TITLE" =~ ^[Dd]eployment ]]; then
             echo "❌ Issue title must start with 'Deployment'"
