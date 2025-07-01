@@ -73,4 +73,4 @@ jobs:
         run: |
           git add .
           git commit -m "OnDemand Loop deployment build for version ${{ inputs.tag }}"
-          git push
+          git push origin "${{ inputs.branch }}" --force
