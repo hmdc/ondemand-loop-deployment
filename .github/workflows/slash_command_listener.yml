@@ -1,0 +1,19 @@
+name: FASRC Deployment Slash Command Listener
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  slash-command:
+    if: contains(github.event.comment.body, '/deploy')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/slash-command-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-type: issue
+          event-type-suffix: _command
+          commands: |
+            deploy
+          permission: write
