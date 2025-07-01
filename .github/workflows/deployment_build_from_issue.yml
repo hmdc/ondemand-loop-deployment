@@ -28,8 +28,8 @@ jobs:
           TITLE=$(gh issue view "$ISSUE_NUMBER" --repo "${{ github.repository }}" --json title --jq '.title')
           TAG=$(echo "$TITLE" | grep -oE 'version: *[^ ]+' | sed 's/version: *//')
           
-          if [[ ! "$TITLE" =~ ^[Dd]eployment ]]; then
-            set_output "message" "❌ **Issue title must start with Deployment**"
+          if [[ ! "$TITLE" =~ ^[Dd]eployment [Bb]uild ]]; then
+            set_output "message" "❌ **Issue title must start with Deployment Build**"
             exit 1
           fi
 
@@ -66,16 +66,16 @@ jobs:
           
           ISSUE="${{ github.event.client_payload.github.payload.issue.number }}"
           APPROVED=$(gh issue view "$ISSUE" --repo "${{ github.repository }}" --json comments --jq \
-            '.comments[].body | select(test("(?i)deployment approved"))')
+            '.comments[].body | select(test("(?i)build approved"))')
 
           if [ -z "$APPROVED" ]; then
-            set_output "message" "❌ **Deployment not approved. Aborting.**"
+            set_output "message" "❌ **Build not approved. Aborting.**"
             exit 1
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy:
+  build:
     needs: validate
     uses: ./.github/workflows/build_from_tag.yml
     with:
@@ -97,11 +97,11 @@ jobs:
         run: |
           source .github/scripts/utils.sh
           
-          STATUS="${{ needs.deploy.result }}"
+          STATUS="${{ needs.build.result }}"
           if [ "$STATUS" = "success" ]; then
-            set_output "title" "✅ **Deployment succeeded**"
+            set_output "title" "✅ **Deployment build succeeded**"
           else
-            set_output "title" "❌ **Deployment failed**"
+            set_output "title" "❌ **Deployment build failed**"
           fi
 
       - name: Post completion comment
