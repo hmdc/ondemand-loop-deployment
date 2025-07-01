@@ -113,7 +113,7 @@ jobs:
             
             ${{ needs.validate.outputs.message }}
       
-            **Version**: `${{ needs.validate.outputs.tag }}`  
-            **Environment**: `${{ needs.validate.outputs.env }}`
-            **Branch**: `${{ needs.validate.outputs.branch }}`
+            **Version**: `${{ needs.validate.outputs.tag || 'N/A' }}`  
+            **Environment**: `${{ needs.validate.outputs.env || 'N/A' }}`
+            **Branch**: `${{ needs.validate.outputs.branch || 'N/A' }}`
             **Run**: [View workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
