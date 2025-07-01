@@ -88,6 +88,9 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Compose result title
         id: title
         run: |
