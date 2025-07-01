@@ -52,20 +52,14 @@ jobs:
       - name: Checkout target
         uses: actions/checkout@v4
         with:
+          ref: main
+          fetch-depth: 0
           path: target
 
-      - name: Checkout or create target branch
+      - name: Prepare target branch
         working-directory: target
         run: |
-          source .github/scripts/utils.sh
-
-          if git ls-remote --exit-code --heads origin "${{ inputs.branch }}"; then
-            set_output "message" "✅ **Branch '${{ inputs.branch }}' exists. Checking it out**"
-            git checkout "${{ inputs.branch }}"
-          else
-            set_output "message" "🆕 **Branch '${{ inputs.branch }}' does not exist. Creating it from origin/main**"
-            git checkout -b "${{ inputs.branch }}" origin/main
-          fi
+          git checkout -B "${{ inputs.branch }}"
 
       - name: Copy build code
         run: |
@@ -78,5 +72,5 @@ jobs:
         working-directory: target
         run: |
           git add .
-          git commit -m "OnDemand Loop deployment for version ${{ inputs.tag }}"
+          git commit -m "OnDemand Loop deployment build for version ${{ inputs.tag }}"
           git push
