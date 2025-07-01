@@ -11,7 +11,7 @@ jobs:
       tag: ${{ steps.extract.outputs.tag }}
       env: ${{ steps.extract.outputs.env }}
       branch: ${{ steps.extract.outputs.branch }}
-      message: ${{ steps.extract.outputs.message }}
+      message: ${{ steps.extract.outputs.message || steps.approval.outputs.message }}
 
     steps:
       - name: Checkout repo
@@ -59,6 +59,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Require approval for Production
+        id: approval
         if: ${{ steps.extract.outputs.env == 'production' }}
         run: |
           source .github/scripts/utils.sh
