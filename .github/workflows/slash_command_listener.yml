@@ -1,4 +1,4 @@
-name: FASRC Deployment Slash Command Listener
+name: FASRC Command Listener
 
 on:
   issue_comment:
