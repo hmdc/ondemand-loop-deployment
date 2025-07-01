@@ -6,7 +6,7 @@ on:
 
 jobs:
   slash-command:
-    if: contains(github.event.comment.body, '/deploy')
+    if: contains(github.event.comment.body, '/deployment_build')
     runs-on: ubuntu-latest
     steps:
       - name: Check if user is authorized
@@ -25,5 +25,5 @@ jobs:
           issue-type: issue
           event-type-suffix: _command
           commands: |
-            deploy
+            deployment_build
           permission: none

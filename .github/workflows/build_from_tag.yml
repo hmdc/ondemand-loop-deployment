@@ -1,4 +1,4 @@
-name: Build and Deploy from Tag
+name: Build from Tag
 
 on:
   workflow_call:
@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print deployment parameters
+      - name: Print build parameters
         run: |
-          echo "🔧 Deploying with parameters:"
+          echo "🔧 Build with parameters:"
           echo "  - tag: ${{ inputs.tag }}"
           echo "  - environment: ${{ inputs.environment }}"
           echo "  - branch: ${{ inputs.branch }}"
@@ -45,24 +45,36 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: src
 
-      - name: Build release
+      - name: Build artifacts
         working-directory: src
         run: make release_build
 
-      - name: Checkout Loop Environment Branch
+      - name: Checkout target
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
           path: target
 
-      - name: Copy Loop new version
+      - name: Checkout or create target branch
+        working-directory: target
+        run: |
+          source .github/scripts/utils.sh
+
+          if git ls-remote --exit-code --heads origin "${{ inputs.branch }}"; then
+            set_output "message" "✅ **Branch '${{ inputs.branch }}' exists. Checking it out**"
+            git checkout "${{ inputs.branch }}"
+          else
+            set_output "message" "🆕 **Branch '${{ inputs.branch }}' does not exist. Creating it from origin/main**"
+            git checkout -b "${{ inputs.branch }}" origin/main
+          fi
+
+      - name: Copy build code
         run: |
           rsync -a --delete --exclude='.git' src/application/ target/
 
       - name: List contents of target
         run: ls -la target/
 
-      - name: Commit production release
+      - name: Commit build
         working-directory: target
         run: |
           git add .

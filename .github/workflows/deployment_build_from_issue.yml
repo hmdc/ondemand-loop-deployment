@@ -1,8 +1,8 @@
-name: FASRC Deployment From Issue Command
+name: FASRC Deployment Build
 
 on:
   repository_dispatch:
-    types: [deploy_command]
+    types: [deployment_build_command]
 
 jobs:
   validate:
@@ -38,7 +38,7 @@ jobs:
               BRANCH="iqss_qa"
               ;;
             production)
-              BRANCH="iqss_production"
+              BRANCH="iqss_production_${TAG//+/-}"
               ;;
             *)
               set_output "message" "❌ **Unknown environment: $ENVIRONMENT**"
@@ -84,7 +84,7 @@ jobs:
       branch: ${{ needs.validate.outputs.branch }}
 
   comment:
-    name: Comment on Deployment Success
+    name: Comment on completion
     needs: [ validate, deploy ]
     runs-on: ubuntu-latest
     if: always()
@@ -104,7 +104,7 @@ jobs:
             set_output "title" "❌ **Deployment failed**"
           fi
 
-      - name: Post deployment comment
+      - name: Post completion comment
         uses: peter-evans/create-or-update-comment@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -116,5 +116,5 @@ jobs:
       
             **Version**: `${{ needs.validate.outputs.tag || 'N/A' }}`  
             **Environment**: `${{ needs.validate.outputs.env || 'N/A' }}`
-            **Branch**: `${{ needs.validate.outputs.branch || 'N/A' }}`
+            **Branch**: [`${{ needs.validate.outputs.branch || 'N/A' }}`](${{ github.server_url }}/${{ github.repository }}/tree/${{ needs.validate.outputs.branch }})
             **Run**: [View workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
