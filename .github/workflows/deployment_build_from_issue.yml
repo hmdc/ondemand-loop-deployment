@@ -85,7 +85,7 @@ jobs:
 
   comment:
     name: Comment on completion
-    needs: [ validate, deploy ]
+    needs: [ validate, build ]
     runs-on: ubuntu-latest
     if: always()
     steps:
