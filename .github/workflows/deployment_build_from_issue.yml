@@ -26,9 +26,10 @@ jobs:
           ENVIRONMENT=$(echo "$ENVIRONMENT" | tr '[:upper:]' '[:lower:]')
           ISSUE_NUMBER="${{ github.event.client_payload.github.payload.issue.number }}"
           TITLE=$(gh issue view "$ISSUE_NUMBER" --repo "${{ github.repository }}" --json title --jq '.title')
+          TITLE=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]')
           TAG=$(echo "$TITLE" | grep -oE 'version: *[^ ]+' | sed 's/version: *//')
           
-          if [[ ! "$TITLE" =~ ^[Dd]eployment [Bb]uild ]]; then
+          if [[ ! "$TITLE" =~ ^deployment\ build ]]; then
             set_output "message" "❌ **Issue title must start with Deployment Build**"
             exit 1
           fi
