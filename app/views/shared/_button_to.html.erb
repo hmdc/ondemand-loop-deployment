@@ -1,0 +1,39 @@
+<%= form_with url: url,
+              method: (local_assigns[:method] || :post),
+              class: (local_assigns[:form_class] || "d-inline"),
+              data: {
+                controller: "submit-button",
+                'submit-button-modal-id-value': local_assigns[:modal_id],
+                'submit-button-modal-title-value': local_assigns[:modal_title],
+                'submit-button-modal-subtitle-value': local_assigns[:modal_subtitle],
+                'submit-button-modal-content-value': local_assigns[:modal_content],
+                'submit-button-modal-confirm-text-value': local_assigns[:modal_confirm_text],
+              } do %>
+
+  <%= yield %>
+
+  <% accessible_label = local_assigns[:label] || local_assigns[:title] || t('.button_accessibility_default_label') %>
+  <%= button_tag type: 'submit',
+                 class: "btn #{local_assigns[:class] || 'btn-outline-dark btn-sm'}",
+                 title: local_assigns[:title] || accessible_label,
+                 "aria-label" => accessible_label,
+                 data: {
+                   action: 'click->submit-button#click',
+                   submit_button_target: 'button'
+                 } do %>
+
+    <span data-submit-button-target="spinner"
+          class="spinner-border spinner-border-sm me-1 d-none"
+          role="status" aria-hidden="true"></span>
+
+    <span data-submit-button-target="label">
+      <% if local_assigns[:icon] %>
+        <i class="<%= icon %>" aria-hidden="true"></i>
+      <% end %>
+      <% if local_assigns[:label] %>
+        <span class="ps-1"><%= label %></span>
+      <% end %>
+    </span>
+
+  <% end %>
+<% end %>
