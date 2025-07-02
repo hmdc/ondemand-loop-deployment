@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Extract version and map environment to branch
+      - name: Extract metadata and validate parameters
         id: extract
         run: |
           source .github/scripts/utils.sh
@@ -39,7 +39,7 @@ jobs:
             exit 1
           fi
           
-          validate_issue_state_and_assignment
+          validate_issue "deployment_build"
           
           case "$ENVIRONMENT" in
             qa)
