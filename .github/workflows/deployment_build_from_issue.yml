@@ -21,19 +21,26 @@ jobs:
         id: extract
         run: |
           source .github/scripts/utils.sh
-
+          
           ENVIRONMENT="${{ github.event.client_payload.slash_command.args.named.env }}"
           ENVIRONMENT=$(echo "$ENVIRONMENT" | tr '[:upper:]' '[:lower:]')
           ISSUE_NUMBER="${{ github.event.client_payload.github.payload.issue.number }}"
-          TITLE=$(gh issue view "$ISSUE_NUMBER" --repo "${{ github.repository }}" --json title --jq '.title')
-          TITLE=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]')
+          REPO="${{ github.repository }}"
+          
+          # Cache issue JSON
+          cache_issue_json "$ISSUE_NUMBER" "$REPO"
+          ISSUE_JSON=$(get_issue_json_path)
+          
+          TITLE=$(jq -r '.title' "$ISSUE_JSON" | tr '[:upper:]' '[:lower:]')
           TAG=$(echo "$TITLE" | grep -oE 'version: *[^ ]+' | sed 's/version: *//')
           
           if [[ ! "$TITLE" =~ ^deployment\ build ]]; then
             set_output "message" "❌ **Issue title must start with Deployment Build**"
             exit 1
           fi
-
+          
+          validate_issue_state_and_assignment
+          
           case "$ENVIRONMENT" in
             qa)
               BRANCH="iqss_qa"
@@ -46,7 +53,7 @@ jobs:
               exit 1
               ;;
           esac
-
+          
           set_output "env" "$ENVIRONMENT"
           set_output "tag" "$TAG"
           set_output "branch" "$BRANCH"
@@ -58,6 +65,7 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Require approval for Production
         id: approval
