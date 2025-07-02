@@ -65,6 +65,10 @@ jobs:
         run: |
           rsync -a --delete --exclude='.git' src/application/ target/
 
+      - name: Copy FASRC configuration
+        run: |
+          cp -R src/config/fasrc/. target
+
       - name: List contents of target
         run: ls -la target/
 
