@@ -69,13 +69,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
           path: config
 
       - name: Copy FASRC configuration
         working-directory: config
         run: |
-          cp -R config/fasrc/. target
+          ls -la config/
+          ls -la config/fasrc/
+          cp -Rv config/fasrc/. target/
 
       - name: List contents of target
         run: ls -la target/
