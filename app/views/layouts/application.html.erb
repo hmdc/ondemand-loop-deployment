@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale.to_s %>">
+  <head>
+    <title><%= content_for(:title) || "OnDemand Loop" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="<%= asset_path "icon.png" %>" type="image/png">
+    <link rel="apple-touch-icon" href="<%= asset_path "icon.png" %>">
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_importmap_tags %>
+
+    <%= render partial: '/layouts/config' %>
+  </head>
+
+  <body>
+    <%= render partial: '/layouts/nav/navigation' %>
+    <%= render partial: '/layouts/project_bar', locals: { project: @active_project }  if @active_project %>
+    <%= render partial: '/layouts/repo_resolver_bar' %>
+    <h1 class="visually-hidden"><%= content_for(:title) || 'OnDemand Loop' %></h1>
+    <div id="main_container" class="container-md content mt-4" role="main">
+      <%= render partial: '/layouts/flash_messages' %>
+      <%= yield %>
+    </div>
+
+
+    <%= render partial: "/layouts/footer" %>
+
+    <%= render partial: '/layouts/modal' %>
+    <%= render partial: '/layouts/modal_delete_confirmation' %>
+  </body>
+</html>

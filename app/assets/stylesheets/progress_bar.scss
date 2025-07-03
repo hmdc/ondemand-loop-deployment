@@ -1,0 +1,18 @@
+.progress {
+  position: relative;
+  background-color: #d6d8db;
+  border: 1px solid #d6d8db;
+}
+
+.progress-bar {
+  position: relative;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 1rem;
+}
