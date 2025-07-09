@@ -38,12 +38,24 @@
     <a id="continue" class="btn-primary" href="#">Continue to OnDemand Loop</a>
   </main>
   <script>
-    const loop_urls = { local: "https://localhost:33000/pun/sys/loop/integrations/dataverse/external_tool/dataset" };
+    const loop_urls = {
+      local: 'https://localhost:33000/pun/sys/loop/integrations/dataverse/external_tool/dataset'
+    };
+
     const params = new URLSearchParams(window.location.search);
-    const env = params.get('env') || 'local';
-    const base = loop_urls[env] || loop_urls['local'];
+    let env = 'local';
+
+    for (const [key] of params.entries()) {
+      if (key.startsWith('env_')) {
+        env = key.substring(4); // extract value from 'env_local' => 'local'
+        break;
+      }
+    }
+
+    const base = loop_urls[env];
     const query = params.toString();
-    document.getElementById('continue').href = base + (query ? (base.includes('?') ? '&' : '?') + query : '');
+    document.getElementById('continue').href = base + (query ? '?' + query : '');
   </script>
+
 </body>
 </html>
