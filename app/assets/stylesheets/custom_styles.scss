@@ -1,0 +1,96 @@
+.files {
+  .custom-stripe {
+    background-color: #e9ecef;
+  }
+}
+
+div.creation-date span, span.creation-date {
+  font-size: 0.7rem;
+  cursor: default;
+}
+
+.icon-class {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.badge.file-status {
+  cursor: default;
+}
+
+.btn-icon-sm {
+  padding: 0.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-project-muted {
+  background-color: #a1a8b0;
+  color: #212529;
+}
+
+.btn-project-muted {
+  background-color: #a1a8b0;
+  color: #212529;
+  border: 1px solid #949ba3;
+}
+
+.btn-project-muted:hover {
+  background-color: #949ba3;
+}
+
+.bg-project-warn {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.btn-project-warn {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+.btn-project-warn:hover {
+  background-color: #f1b0b7;
+}
+
+.bg-project-neutral {
+  background-color: #ced4da;
+  color: #212529;
+}
+
+.btn-project-neutral {
+  background-color: #ced4da;
+  color: #212529;
+  border: 1px solid #adb5bd;
+}
+.btn-project-neutral:hover {
+  background-color: #bfc6cd;
+}
+
+.btn-badge {
+  padding: 0.4rem 0.4rem;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.bg-light-darker {
+  background-color: #f1f3f5 !important;
+}
+
+.icon-hover-danger:hover {
+  color: #fff;
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+
+.cursor-default {
+  cursor: default !important;
+}
+
+.table-narrow-col {
+  width: 1%;
+  white-space: nowrap;
+}
