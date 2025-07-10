@@ -10,6 +10,9 @@ This repository contains the configuration and automation pipeline used to manag
 - ⚙️ **FASRC-Specific Configuration**  
   Hosts and maintains the environment-specific configuration needed to deploy OnDemand Loop as a Passenger application within FASRC.
 
+- **Dataverse External Tools landing page**
+  To improve the UX for Dataverse users without and FASRC account, this page will allow us to explain what is requiried o access OnDemand Loop.
+
 - 🧩 **Separation of Concerns**  
   Application code lives in [`IQSS/ondemand-loop`](https://github.com/IQSS/ondemand-loop).  
   This repository is responsible for building and deploying that code into FASRC environments.
@@ -50,7 +53,7 @@ This pushes the same build to a versioned production branch (e.g., `iqss_product
 
 This repository:
 
-- Runs GitHub Actions to coordinate builds.
+- Runs GitHub Actions to coordinate builds and deploy GitHub pages.
 - Prepares the application with FASRC-specific configs.
 - Publishes artifacts by pushing to appropriate deployment branches.
 - **Does not deploy**—deployment is handled externally (e.g., via Puppet).
@@ -60,6 +63,7 @@ This repository:
 - `.github/workflows/`: Build and deployment automation workflows.
 - `.github/scripts/`: Shared utility scripts for workflow logic.
 - `config/`: Contains FASRC-specific configuration.
+- `dv_external_tools/`: Static HTML landing page to integrate with Harvard Dataverse.
 
 ## Requirements
 
