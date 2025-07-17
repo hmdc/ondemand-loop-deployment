@@ -27,4 +27,5 @@ jobs:
           commands: |
             deployment_build_candidate
             deployment_build_release
+            deployment_build_deployed
           permission: none

@@ -155,3 +155,5 @@ jobs:
             **Environment**: `${{ needs.validate.outputs.env || 'N/A' }}`
             **Branch**: [`${{ needs.validate.outputs.branch || 'N/A' }}`](${{ github.server_url }}/${{ github.repository }}/tree/${{ needs.validate.outputs.branch }})
             **Run**: [View workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            <!-- build-release: status=${{ needs.build.result }} tag=${{ needs.release.outputs.version }} -->

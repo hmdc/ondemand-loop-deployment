@@ -1,0 +1,68 @@
+name: Mark Release as Production Deployed
+
+on:
+  repository_dispatch:
+    types: [deployment_build_deployed_command]
+
+jobs:
+  mark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to create/move tags
+
+      - name: Extract release tag from issue comment
+        id: extract
+        run: |
+          source .github/scripts/utils.sh
+
+          ISSUE_NUMBER="${{ github.event.client_payload.github.payload.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          cache_issue_json "$ISSUE_NUMBER" "$REPO"
+          ISSUE_JSON=$(get_issue_json_path)
+
+          COMMENT=$(jq -r '.comments[].body | select(test("<!-- build-release:"))' "$ISSUE_JSON" | tail -n 1)
+          STATUS=$(echo "$COMMENT" | grep -oE 'status=([a-z]+)' | cut -d= -f2)
+          TAG=$(echo "$COMMENT" | grep -oE 'tag=([^ >]+)' | cut -d= -f2)
+
+          if [[ -z "$TAG" || "$STATUS" != "success" ]]; then
+            echo "❌ Invalid or missing build-release marker in issue comments"
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Move production_deployed tag to release tag
+        run: |
+          git fetch --tags
+          git tag -f production_deployed ${{ steps.extract.outputs.tag }}
+          git push origin production_deployed --force
+
+      - name: Add production_deployed label to issue
+        run: |
+          gh issue edit ${{ steps.extract.outputs.issue_number }} \
+            --repo "${{ github.repository }}" \
+            --add-label "production_deployed"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post confirmation comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ steps.extract.outputs.issue_number }}
+          body: |
+            ✅ **Release marked as deployed to production**
+
+            **Release Tag:** `${{ steps.extract.outputs.tag }}`
+            **Deployed Tag:** [`production_deployed`](https://github.com/${{ github.repository }}/releases/tag/production_deployed)
+
+            🏷️ The issue has been labeled as `production_deployed`.
+
+            [View this workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
