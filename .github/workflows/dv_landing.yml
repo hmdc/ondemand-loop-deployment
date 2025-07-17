@@ -2,6 +2,15 @@ name: Deploy Dataverse Landing
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - production
 
 permissions:
   contents: read
@@ -9,22 +18,36 @@ permissions:
   id-token: write
 
 concurrency:
-  group: dv-landing
+  group: dv-landing-${{ github.event.inputs.environment }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      deploy_path: ${{ steps.set-path.outputs.deploy_path }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set deployment path
+        id: set-path
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "qa" ]; then
+            echo "deploy_path=site/qa" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy_path=site" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Prepare site
         run: |
-          mkdir site
-          cp -R dv_external_tools site/
+          mkdir -p ${{ steps.set-path.outputs.deploy_path }}
+          cp -R dv_external_tools/* ${{ steps.set-path.outputs.deploy_path }}/
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
