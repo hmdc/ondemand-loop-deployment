@@ -2,6 +2,15 @@ name: Deploy Dataverse Landing
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - production
 
 permissions:
   contents: read
@@ -9,28 +18,51 @@ permissions:
   id-token: write
 
 concurrency:
-  group: dv-landing
+  group: dv-landing-${{ github.event.inputs.environment }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Prepare site
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: source
+          fetch-depth: 0  # Needed for tag checkout
+
+      - name: Create site folder
+        run: mkdir -p site/qa
+
+      - name: Build for production
+        if: ${{ github.event.inputs.environment == 'production' }}
+        working-directory: source
         run: |
-          mkdir site
-          cp -R dv_external_tools site/
+          git checkout production_deployed
+          cp -R dv_external_tools ../site/
+
+      - name: Build for QA
+        if: ${{ github.event.inputs.environment == 'qa' }}
+        working-directory: source
+        run: |
+          # Step 1: production build into root
+          git checkout production_deployed
+          cp -R dv_external_tools ../site/
+
+          # Step 2: head build into /qa
+          git checkout -
+          cp -R dv_external_tools ../site/qa/
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deploy
