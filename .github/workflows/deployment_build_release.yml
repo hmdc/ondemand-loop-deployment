@@ -1,4 +1,4 @@
-name: FASRC Deployment Build
+name: FASRC Build Release
 
 on:
   repository_dispatch:

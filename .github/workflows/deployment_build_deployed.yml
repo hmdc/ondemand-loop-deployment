@@ -1,4 +1,4 @@
-name: Mark Release as Production Deployed
+name: Mark Release Deployed
 
 on:
   repository_dispatch:
