@@ -3,6 +3,9 @@ name: Build from Tag
 on:
   workflow_call:
     inputs:
+      commit_hash:
+        required: true
+        type: string
       tag:
         required: true
         type: string
@@ -21,6 +24,7 @@ jobs:
       - name: Print build parameters
         run: |
           echo "🔧 Build with parameters:"
+          echo "  - commit_hash: ${{ inputs.commit_hash }}"
           echo "  - tag: ${{ inputs.tag }}"
           echo "  - environment: ${{ inputs.environment }}"
           echo "  - branch: ${{ inputs.branch }}"
@@ -68,7 +72,7 @@ jobs:
       - name: Checkout FASRC config
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ inputs.commit_hash }}
           path: fasrc_config
 
       - name: Copy FASRC configuration
@@ -82,5 +86,5 @@ jobs:
         working-directory: target
         run: |
           git add .
-          git commit -m "OnDemand Loop deployment build for version ${{ inputs.tag }}"
+          git commit -m "OnDemand Loop deployment build for OnDemand Loop ${{ inputs.tag }}"
           git push origin "${{ inputs.branch }}" --force

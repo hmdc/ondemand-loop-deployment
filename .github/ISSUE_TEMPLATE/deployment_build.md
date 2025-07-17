@@ -22,7 +22,7 @@ Follow the steps below to prepare a deployment build of OnDemand Loop.
 2. **Create a QA deployment build**
    - Comment the following slash command on this issue:
      ```
-     /deployment_build env=QA
+     /deployment_build_candidate
      ```
    - This builds the specified version and pushes it to the `iqss_qa` branch.
 
@@ -36,8 +36,9 @@ Follow the steps below to prepare a deployment build of OnDemand Loop.
 4. **Create a Production deployment build**
    - After approval, publish to production by commenting:
      ```
-     /deployment_build env=Production
+     /deployment_build_release type=<patch|minor|major>
      ```
+   - Creates a GitHub release based on the VERSION file
    - This pushes the same version to a new production branch (e.g., `iqss_production_<version>`).
 
 5. **Finish up**

@@ -2,12 +2,14 @@ name: FASRC Deployment Build
 
 on:
   repository_dispatch:
-    types: [deployment_build_command]
+    types: [deployment_build_release_command]
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     outputs:
+      commit_hash: ${{ steps.commit.outputs.commit_hash }}
+      release_type: ${{ steps.extract.outputs.release_type }}
       tag: ${{ steps.extract.outputs.tag }}
       env: ${{ steps.extract.outputs.env }}
       branch: ${{ steps.extract.outputs.branch }}
@@ -22,14 +24,35 @@ jobs:
         run: |
           source .github/scripts/utils.sh
           
-          ENVIRONMENT="${{ github.event.client_payload.slash_command.args.named.env }}"
-          ENVIRONMENT=$(echo "$ENVIRONMENT" | tr '[:upper:]' '[:lower:]')
           ISSUE_NUMBER="${{ github.event.client_payload.github.payload.issue.number }}"
           REPO="${{ github.repository }}"
           
           # Cache issue JSON
           cache_issue_json "$ISSUE_NUMBER" "$REPO"
           ISSUE_JSON=$(get_issue_json_path)
+          
+          # GET BUILD CANDIDATE DATA
+          BUILD_CANDIDATE_COMMENTS=$(jq -r '.comments[].body | select(test("<!-- build-candidate:"))' "$ISSUE_JSON")
+          COMMENT=$(echo "$BUILD_CANDIDATE_COMMENTS" | tail -n 1)
+          SHA=$(echo "$COMMENT" | grep -oE 'commit=([a-f0-9]{7,40})' | cut -d= -f2)
+          STATUS=$(echo "$COMMENT" | grep -oE 'status=([a-z]+)' | cut -d= -f2)
+          
+          if [ -z "$SHA" ]; then
+            set_output "message" "❌ **Release candidate commit not found in comments**"
+            exit 1
+          fi
+          
+          if [ "$STATUS" != "success" ]; then
+            set_output "message" "❌ **Last release candidate deployment did not succeed**"
+            exit 1
+          fi
+          
+          RELEASE_TYPE="${{ github.event.client_payload.slash_command.args.named.type }}"
+          echo "Parsed release type: $RELEASE_TYPE"
+          if [[ "$RELEASE_TYPE" != "patch" && "$RELEASE_TYPE" != "minor" && "$RELEASE_TYPE" != "major" ]]; then
+            set_output "message" "❌ **Invalid release type: ${RELEASE_TYPE:-N/A}**"
+            exit 1
+          fi
           
           TITLE=$(jq -r '.title' "$ISSUE_JSON" | tr '[:upper:]' '[:lower:]')
           TAG=$(echo "$TITLE" | grep -oE 'version: *[^ ]+' | sed 's/version: *//')
@@ -41,26 +64,18 @@ jobs:
           
           validate_issue "deployment_build"
           
-          case "$ENVIRONMENT" in
-            qa)
-              BRANCH="iqss_qa"
-              ;;
-            production)
-              BRANCH="iqss_production_${TAG//+/-}"
-              ;;
-            *)
-              set_output "message" "❌ **Unknown environment: $ENVIRONMENT**"
-              exit 1
-              ;;
-          esac
+          # RELEASE => ALWAYS PRODUCTION
+          BRANCH="iqss_production_${TAG//+/-}"
           
-          set_output "env" "$ENVIRONMENT"
+          set_output "commit_hash" "$SHA"
+          set_output "release_type" "$RELEASE_TYPE"
+          set_output "env" "production"
           set_output "tag" "$TAG"
           set_output "branch" "$BRANCH"
           
           # Final validation
-          if [[ -z "$ENVIRONMENT" || -z "$TAG" || -z "$BRANCH" ]]; then
-            set_output "message" "❌ **Environment, tag, and branch are required values**"
+          if [[ -z "$TAG" || -z "$BRANCH" ]]; then
+            set_output "message" "❌ **Tag, and branch are required values**"
             exit 1
           fi
         env:
@@ -84,10 +99,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  release:
+    needs: validate
+    if: ${{ steps.extract.outputs.env == 'production' }}
+    uses: ./.github/workflows/release.yml
+    with:
+      commit_hash: ${{ needs.validate.outputs.commit_hash }}
+      release_type: ${{ needs.validate.outputs.release_type }}
+
   build:
     needs: validate
     uses: ./.github/workflows/build_from_tag.yml
     with:
+      commit_hash: ${{ needs.validate.outputs.commit_hash }}
       tag: ${{ needs.validate.outputs.tag }}
       environment: ${{ needs.validate.outputs.env }}
       branch: ${{ needs.validate.outputs.branch }}
@@ -122,8 +146,13 @@ jobs:
             ${{ steps.title.outputs.title }}
             
             ${{ needs.validate.outputs.message }}
-      
-            **Version**: `${{ needs.validate.outputs.tag || 'N/A' }}`  
+            
+            **Release Type**: `${{ needs.validate.outputs.release_type || 'N/A' }}`
+            **Version**: `${{ needs.release.outputs.version || 'N/A' }}`
+            **Notes**: [View GitHub Release Notes](${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ needs.release.outputs.version }})
+            **Commit Hash**: `${{ needs.validate.outputs.commit_hash || 'N/A' }}`
+            
+            **OnDemand Loop Version**: `${{ needs.validate.outputs.tag || 'N/A' }}`
             **Environment**: `${{ needs.validate.outputs.env || 'N/A' }}`
             **Branch**: [`${{ needs.validate.outputs.branch || 'N/A' }}`](${{ github.server_url }}/${{ github.repository }}/tree/${{ needs.validate.outputs.branch }})
             **Run**: [View workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

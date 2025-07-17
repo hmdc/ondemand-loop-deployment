@@ -25,5 +25,6 @@ jobs:
           issue-type: issue
           event-type-suffix: _command
           commands: |
-            deployment_build
+            deployment_build_candidate
+            deployment_build_release
           permission: none
