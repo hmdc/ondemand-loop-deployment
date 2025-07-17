@@ -6,29 +6,7 @@
   <title>Access OnDemand Loop</title>
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="stylesheet" href="assets/bootstrap-5.3.min.css" />
-  <style>
-    html, body {
-      height: 100%;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      margin: 0;
-    }
-    .page-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    nav img {
-      height: 60px;
-      margin-right: 0.5rem;
-    }
-    .footer-logo {
-      height: 40px;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/landing.css" />
 </head>
 <body>
 <nav class="navbar p-3 shadow-sm bg-dark" data-bs-theme="dark">
@@ -41,18 +19,39 @@
 </nav>
 
 <div class="page-wrapper">
-  <main class="container mt-4">
-    <h1 class="mb-4">Welcome to OnDemand Loop</h1>
+  <main class="container">
+    <div class="row align-items-center justify-content-between my-5">
+      <div class="col-4 text-start">
+        <a href="https://dataverse.harvard.edu/">
+          <img src="assets/hdv_logo.png" alt="Harvard Dataverse Logo" class="img-fluid" style="max-height: 100px;">
+        </a>
+      </div>
+      <div class="col-4 d-flex justify-content-center align-items-end">
+        <img src="assets/ood_loop_logo.png" alt="OnDemand Loop Logo" class="img-fluid" style="max-height: 100px;">
+      </div>
+      <div class="col-4 text-end">
+        <a href="https://openondemand.org/">
+          <img src="assets/ood_logo.svg" alt="Open OnDemand Logo" style="max-height: 80px;">
+        </a>
+      </div>
+    </div>
 
-    <p><strong>OnDemand Loop</strong> is a tool that allows you to browse and download Dataverse dataset files directly into the FASRC High-Performance Computing (HPC) cluster using the Open OnDemand interface.</p>
+    <h1 class="h2 mb-1">Welcome to OnDemand Loop</h1>
 
-    <h2 class="mt-4">Before You Continue</h2>
+    <p class="mb-5">
+      <strong>OnDemand Loop</strong> simplifies the process of moving data between
+      <a href="https://dataverse.harvard.edu/" target="_blank">Harvard Dataverse</a> and the
+      <a href="https://www.rc.fas.harvard.edu/" target="_blank">FASRC High-Performance Computing cluster</a>.
+      It enables researchers to seamlessly browse, download, and upload dataset files directly within the Open OnDemand environment — streamlining data access for analysis, reproducibility, and verification workflows.
+    </p>
+
+    <h2 class="h3 mt-4">Before You Continue</h2>
     <ul>
       <li>You <strong>must</strong> have an active <strong>FASRC account</strong>.</li>
       <li>You <strong>must</strong> be connected to the <strong>FASRC VPN</strong>.</li>
     </ul>
 
-    <p>Most Dataverse users will not have access to FASRC or the VPN. If you are unsure whether you have the necessary access, please check with your system administrator or research computing support team before proceeding.</p>
+    <p>If you are not sure whether you have the necessary access to the cluster, please check with your system administrator or research computing support team before proceeding.</p>
 
     <p>If you meet the access requirements, you can continue to the OnDemand Loop application below.</p>
 
@@ -64,7 +63,7 @@
 
   <footer class="d-flex justify-content-between align-items-center p-4 mt-auto border-top text-muted flex-wrap">
     <div class="me-2">
-      <a href="https://vdi.rc.fas.harvard.edu/pun/sys/dashboard">
+      <a href="https://www.rc.fas.harvard.edu/">
         <img src="assets/fasrc_logo.jpg" class="footer-logo img-fluid d-block mx-auto" alt="FASRC Logo" height="40" style="max-height: 40px;"/>
       </a>
     </div>
@@ -76,8 +75,8 @@
     </div>
 
     <div class="me-2">
-      <a href="https://www.iq.harvard.edu/news/iqss-launches-sid-cloud-research-software">
-        <img src="assets/sid_logo.png" class="footer-logo img-fluid d-block mx-auto" alt="Sid Logo" height="40" style="max-height: 40px;"/>
+      <a href="https:/dataverse.harvard.edu/">
+        <img src="assets/hdv_logo.png" class="footer-logo img-fluid d-block mx-auto" alt="Harvard Dataverse Logo" height="40" style="max-height: 40px;"/>
       </a>
     </div>
   </footer>

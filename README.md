@@ -2,6 +2,9 @@
 
 This repository contains the configuration and automation pipeline used to manage **deployment builds** for the [OnDemand Loop](https://github.com/IQSS/ondemand-loop) application, tailored for the **Cannon** and **FASSE** clusters at FASRC.
 
+The Harvard Dataverse landing page to inform users of the access requirements to use OnDemand Loop is managed in thus repo.
+The landing page is deployed as a GitHub Page: https://hmdc.github.io/fasrc-ondemand-loop/dv_external_tools/landing.html
+
 ## Overview
 
 - 🚀 **Deployment Build Management**  
