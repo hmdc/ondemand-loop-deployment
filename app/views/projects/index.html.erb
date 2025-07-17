@@ -1,0 +1,30 @@
+<% content_for :title, t('.page_title') %>
+<div class="projects container-md content" role="main">
+  <%= render partial: '/shared/breadcrumbs', locals: { links: [{text: t('.breadcrumbs_text')}]} %>
+  <div class="row">
+      <div class="col-md-12">
+        <%= render partial: 'actions' %>
+        <ul class="list-group">
+          <%= render partial: 'project', locals: { project: @active_project, active: true } if @active_project %>
+          <% @projects.each do |project| %>
+            <%= render partial: 'project', locals: { project: project } unless project.id == @active_project&.id %>
+          <% end %>
+        </ul>
+      </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <% if @projects.empty? %>
+        <div class="alert bg-primary-subtle mt-4">
+          <h4 class="alert-heading"><i class="bi bi-info-circle me-2" aria-hidden="true"></i><%= t('.welcome_title').html_safe %></h4>
+          <p><%= t('.welcome_message_html') %></p>
+          <p class="pt-3 text-center">
+            <%= link_to t('.button_welcome_text'), guide_url, class: 'btn btn-primary', target: '_blank' %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,21 @@
+<% content_for :title, t('.page_title') %>
+<div class="project-details container-md content" role="main">
+  <%= render partial: '/shared/breadcrumbs', locals: { links: [{text: t('.breadcrumbs_text'), url: projects_path}, {text: @project.name}]} %>
+
+  <div class="row mb-2">
+    <div class="col-md-12">
+      <%= render partial: '/projects/show/project_actions', locals: { project: @project } %>
+
+      <%= render partial: '/projects/show/project_tabs', locals: { project: @project } %>
+      <div class="tab-content">
+        <%= render partial: '/projects/show/download_files', locals: { project: @project } %>
+        <% @project.upload_bundles.each do |bundle| %>
+          <%= render partial: '/projects/show/upload_bundle', locals: { project: @project, bundle: bundle } %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
