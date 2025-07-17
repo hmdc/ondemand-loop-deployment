@@ -101,14 +101,13 @@ jobs:
 
   release:
     needs: validate
-    if: ${{ steps.extract.outputs.env == 'production' }}
     uses: ./.github/workflows/release.yml
     with:
       commit_hash: ${{ needs.validate.outputs.commit_hash }}
       release_type: ${{ needs.validate.outputs.release_type }}
 
   build:
-    needs: validate
+    needs: [ validate, release ]
     uses: ./.github/workflows/build_from_tag.yml
     with:
       commit_hash: ${{ needs.validate.outputs.commit_hash }}
@@ -118,7 +117,7 @@ jobs:
 
   comment:
     name: Comment on completion
-    needs: [ validate, build ]
+    needs: [ validate, release, build ]
     runs-on: ubuntu-latest
     if: always()
     steps:
