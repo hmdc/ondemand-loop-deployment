@@ -50,7 +50,7 @@ jobs:
       - name: Commit bumped version to temp branch
         working-directory: src
         run: |
-          git add application/VERSION
+          git add VERSION
           git commit -m "Create release version"
           git push -f origin release-temp
 
