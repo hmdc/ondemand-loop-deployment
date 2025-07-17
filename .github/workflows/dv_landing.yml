@@ -53,6 +53,11 @@ jobs:
           git checkout -
           cp -R dv_external_tools ../site/qa/
 
+      - name: List all files under site/
+        run: |
+          echo "📂 All files under site/:"
+          find site -type f
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -63,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deploy
