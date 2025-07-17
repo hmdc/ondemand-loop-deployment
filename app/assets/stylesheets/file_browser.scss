@@ -1,0 +1,63 @@
+.file-row, .breadcrumb-folder {
+  cursor: pointer;
+}
+
+.file-row:hover {
+  background-color: #f8f9fa;
+}
+
+.file-row:focus {
+  outline: none;
+  background-color: #e9ecef; /* Bootstrap light gray */
+}
+
+.drop-overlay {
+  background-color: rgba(13, 110, 253, 0.08);
+  backdrop-filter: blur(3px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drop-active {
+  height: 150px;
+  max-height: 150px;
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
+
+  &.no-scroll {
+    overflow: hidden !important;
+  }
+
+  .drop-overlay {
+    opacity: 1;
+  }
+}
+
+.file-drop-container {
+  border: 2px solid transparent;
+}
+
+.drop-hover.file-drop-container {
+  border: 2px dashed #0d6efd !important;
+}
+
+.file-drop-text {
+  display: none;
+}
+
+.drop-active .file-drop-text {
+  display: block;
+}
+
+.drop-text {
+  color: #0d6efd;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
